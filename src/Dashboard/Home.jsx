@@ -4,7 +4,7 @@ import Inventory from './components/Inventory';
 import Sales from './components/Sales';
 import Invoices from './components/Invoices.jsx';
 import Dashboard from './components/Dashboard';
-import Category from './components/ategory.jsx';
+import Category from './components/Category.jsx';
 
 function Home() {
     const [activeTab, setActiveTab] = useState('dashboard');
