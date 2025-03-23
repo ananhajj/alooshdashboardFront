@@ -1,6 +1,7 @@
 import React from 'react';
-import PublicContextProvider from './Dashboard/context/publicContext';
+
 import Home from './Dashboard/Home';
+import PublicContextProvider from './Dashboard/context/PublicContext';
 
 function App() {
   return (
