@@ -153,55 +153,63 @@ function Category() {
     setShowCategoryModal(true);
   };
 
-  const handleDeleteCategory = (categoryId) => {
-    
-    const category = categories.find((cat) => cat.categoryId === categoryId);
-    const relatedProducts = category.products?.length;
- 
-    let warningMessage = "لن تتمكن من التراجع عن هذا!";
-    if (relatedProducts > 0) {
-      warningMessage = `سيتم حذف جميع المنتجات (${relatedProducts}) المرتبطة بهذه الفئة أيضًا!`;
-    }
+const handleDeleteCategory = (categoryId) => {
+  const category = categories.find((cat) => cat.categoryId === categoryId);
+  const relatedProducts = category.products?.length;
 
-    Swal.fire({
-      title: "هل أنت متأكد؟",
-      text: warningMessage,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "نعم، احذف الفئة!",
-      cancelButtonText: "إلغاء",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        axios
-          .delete(`https://alooshbackend-production.up.railway.app/api/category/${categoryId}`,
-          )
-          .then((response) => {
-            const updatedCategories = categories.filter(
-              (cat) => cat.categoryId !== categoryId
-            );
-            setCategories(updatedCategories);
+  let warningMessage = "لن تتمكن من التراجع عن هذا!";
+  if (relatedProducts > 0) {
+    warningMessage = `سيتم حذف جميع المنتجات (${relatedProducts}) المرتبطة بهذه الفئة أيضًا!`;
+  }
 
+  Swal.fire({
+    title: "هل أنت متأكد؟",
+    text: warningMessage,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "نعم، احذف الفئة!",
+    cancelButtonText: "إلغاء",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      axios
+        .delete(`https://alooshbackend-production.up.railway.app/api/category/${categoryId}`)
+        .then((response) => {
+          const updatedCategories = categories.filter(
+            (cat) => cat.categoryId !== categoryId
+          );
+          setCategories(updatedCategories);
+
+          Swal.fire({
+            title: "تم الحذف!",
+            text: "تم حذف الفئة وجميع المنتجات المرتبطة بها بنجاح.",
+            icon: "success",
+            confirmButtonText: "موافق",
+          });
+        })
+        .catch((error) => {
+          console.error("خطأ في حذف الفئة:", error.response?.data || error.message);
+          
+          if (error.response && error.response.data && error.response.data.message.includes("foreign key constraint")) {
             Swal.fire({
-              title: "تم الحذف!",
-              text: "تم حذف الفئة وجميع المنتجات المرتبطة بها بنجاح.",
-              icon: "success",
+              title: "خطأ!",
+              text: "لا يمكن حذف المنتج لأنه مرتبط بفواتير في النظام.",
+              icon: "error",
               confirmButtonText: "موافق",
             });
-          })
-          .catch((error) => {
-            console.error("خطأ في حذف الفئة:", error);
+          } else {
             Swal.fire({
               title: "خطأ!",
               text: "حدث خطأ أثناء حذف الفئة. يرجى المحاولة مرة أخرى.",
               icon: "error",
               confirmButtonText: "موافق",
             });
-          });
-      }
-    });
-  };
+          }
+        });
+    }
+  });
+};
 
   return (
     <>
