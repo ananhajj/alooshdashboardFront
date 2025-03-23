@@ -18,8 +18,9 @@ import Dashboard from "./components/Dashboard";
 import Category from "./components/Category.jsx";
  
 import Payment from "./components/Payment.jsx";
+import { PublicContext } from "./context/PublicContext.jsx";
 
-import { PublicContext } from "./context/publicContext.jsx";
+
  
 
 function Home() {
