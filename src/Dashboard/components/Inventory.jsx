@@ -8,9 +8,10 @@ import {
   PlusCircle,
 } from "lucide-react";
 import Swal from "sweetalert2";
-import { PublicContext } from "../context/publicContext";
+
 import Loading from "../Loading/Loading";
 import axios from "axios";
+import { PublicContext } from "../context/PublicContext";
 
 const Inventory = () => {
   const [showAddModal, setShowAddModal] = useState(false);

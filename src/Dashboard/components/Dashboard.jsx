@@ -9,7 +9,7 @@ import {
   Boxes,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { PublicContext } from "../context/publicContext";
+import { PublicContext } from "../context/PublicContext";
 
 const Dashboard = () => {
   const {

@@ -2,9 +2,9 @@ import { Plus, Edit2, Trash2, X } from "lucide-react";
 import { useContext } from "react";
 import { useState } from "react";
 import Swal from "sweetalert2";
-import { PublicContext } from "../context/publicContext";
 import axios from "axios";
 import Loading from "../Loading/Loading";
+import { PublicContext } from "../context/PublicContext";
 
 function Category() {
   const { categories, setCategories, loading, setLoading } =

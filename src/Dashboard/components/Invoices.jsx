@@ -1,9 +1,10 @@
 import React, { useContext, useState } from 'react';
 import { Printer, Download, Eye, Search } from 'lucide-react';
 import InvoicePrint from './InvoicePrint';
-import { PublicContext } from '../context/publicContext';
+
 import { createRoot } from 'react-dom/client';
 import html2canvas from 'html2canvas';
+import { PublicContext } from '../context/PublicContext';
 
 const Invoices = () => {
     const [showInvoice, setShowInvoice] = useState(false);

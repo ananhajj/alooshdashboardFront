@@ -11,11 +11,12 @@ import {
 import Swal from "sweetalert2";
 import InvoicePrint from "./InvoicePrint";
 import CartSection from "./CartSection";
-import { PublicContext } from "../context/publicContext";
+ 
 import html2canvas from "html2canvas";
 import { createRoot } from "react-dom/client";
 import axios from "axios";
 import Loading from "../Loading/Loading";
+import { PublicContext } from "../context/PublicContext";
 
 const Sales = () => {
   const {
@@ -42,9 +43,7 @@ const Sales = () => {
   const [customPayments, setCustomPayments] = useState([]);
   const [newPayment, setNewPayment] = useState({ amount: "", dueDate: "" });
   const [initialPayment, setInitialPayment] = useState(0);
-  const storedToken = localStorage.getItem("token") || sessionStorage.getItem("token");
 
-  const validToken = storedToken;
   const addToCart = (product) => {
     if (product.unitType === "METER") {
       Swal.fire({
