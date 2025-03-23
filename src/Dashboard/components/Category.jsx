@@ -154,10 +154,9 @@ function Category() {
   };
 
   const handleDeleteCategory = (categoryId) => {
-    
     const category = categories.find((cat) => cat.categoryId === categoryId);
     const relatedProducts = category.products?.length;
- 
+
     let warningMessage = "لن تتمكن من التراجع عن هذا!";
     if (relatedProducts > 0) {
       warningMessage = `سيتم حذف جميع المنتجات (${relatedProducts}) المرتبطة بهذه الفئة أيضًا!`;
@@ -175,8 +174,7 @@ function Category() {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`https://alooshbackend-production.up.railway.app/api/category/${categoryId}`,
-          )
+          .delete(`https://alooshbackend-production.up.railway.app/api/category/${categoryId}`)
           .then((response) => {
             const updatedCategories = categories.filter(
               (cat) => cat.categoryId !== categoryId
@@ -191,17 +189,29 @@ function Category() {
             });
           })
           .catch((error) => {
-            console.error("خطأ في حذف الفئة:", error);
-            Swal.fire({
-              title: "خطأ!",
-              text: "حدث خطأ أثناء حذف الفئة. يرجى المحاولة مرة أخرى.",
-              icon: "error",
-              confirmButtonText: "موافق",
-            });
+            console.error("خطأ في حذف الفئة:", error.response?.data || error.message);
+
+            if (error.response && error.response.data && error.response.data.message.includes("foreign key constraint")) {
+              Swal.fire({
+                title: "خطأ!",
+                text: "لا يمكن حذف المنتج لأنه مرتبط بفواتير في النظام.",
+                icon: "warning",
+                confirmButtonText: "موافق",
+              });
+            } else {
+              Swal.fire({
+                title: "خطأ!",
+                text: "حدث خطأ أثناء حذف الفئة. يرجى المحاولة مرة أخرى.",
+                icon: "error",
+                confirmButtonText: "موافق",
+              });
+            }
           });
       }
     });
   };
+
+
 
   return (
     <>

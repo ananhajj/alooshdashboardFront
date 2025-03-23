@@ -215,46 +215,56 @@ const Inventory = () => {
       setLoading(false);
     }
   };
-  const handleDeleteProduct = (id) => {
-    Swal.fire({
-      title: "هل أنت متأكد؟",
-      text: "لن تتمكن من التراجع عن هذا!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "نعم، احذف المنتج!",
-      cancelButtonText: "إلغاء",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        axios
-          .delete(`https://alooshbackend-production.up.railway.app/api/product/${id}`
-          )
-          .then((response) => {
-            const updateProduct = products.filter(
-              (pro) => pro.productId !== id
-            );
-            setProducts(updateProduct);
+const handleDeleteProduct = (id) => {
+  Swal.fire({
+    title: "هل أنت متأكد؟",
+    text: "لن تتمكن من التراجع عن هذا!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "نعم، احذف المنتج!",
+    cancelButtonText: "إلغاء",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      axios
+        .delete(`https://alooshbackend-production.up.railway.app/api/product/${id}`)
+        .then((response) => {
+          const updatedProducts = products.filter(
+            (pro) => pro.productId !== id
+          );
+          setProducts(updatedProducts);
 
+          Swal.fire({
+            title: "تم الحذف!",
+            text: "تم حذف المنتج بنجاح.",
+            icon: "success",
+            confirmButtonText: "موافق",
+          });
+        })
+        .catch((error) => {
+          console.error("خطأ في حذف المنتج:", error.response?.data || error.message);
+    
+          if (error.response && error.response.data && error.response.data.message.includes("foreign key constraint")) {
             Swal.fire({
-              title: "تم الحذف!",
-              text: "تم حذف المنتج    بنجاح.",
-              icon: "success",
+              title: "خطأ!",
+              text: "لا يمكن حذف المنتج لأنه مرتبط بفواتير في النظام.",
+              icon: "warning",
               confirmButtonText: "موافق",
             });
-          })
-          .catch((error) => {
-            console.error("خطأ في حذف المنتج:", error);
+          } else {
             Swal.fire({
               title: "خطأ!",
               text: "حدث خطأ أثناء حذف المنتج. يرجى المحاولة مرة أخرى.",
               icon: "error",
               confirmButtonText: "موافق",
             });
-          });
-      }
-    });
-  };
+          }
+        });
+    }
+  });
+};
+
 
   const toggleDetails = (productId) => {
     setExpandedProductId(expandedProductId === productId ? null : productId);
