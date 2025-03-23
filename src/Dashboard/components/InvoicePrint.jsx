@@ -1,11 +1,11 @@
 import React from "react";
 import { Building2 } from "lucide-react";
+import Swal from "sweetalert2";
 
 const InvoicePrint = ({ invoice }) => {
-   
-
-    return (
+     return (
         <div className="bg-white p-8">
+            
             {/* 🔹 Header Section */}
             <div className="flex justify-between items-start mb-8">
                 <div>
@@ -28,8 +28,8 @@ const InvoicePrint = ({ invoice }) => {
             <div className="mb-8 p-4 bg-gray-50 rounded-lg">
                 <h3 className="font-bold mb-2">معلومات العميل</h3>
                 <p>الاسم: {invoice.customer?.name || "عميل نقدي"}</p>
-                {invoice.customer?.phone && <p>الهاتف: {invoice.customer.phone}</p>}
-                {invoice.customer?.id && <p>رقم الهوية: {invoice.customer.id}</p>}
+                {invoice.customer?.phone && <p>الهاتف: {invoice.customer?.phone}</p>}
+           
             </div>
 
             {/* 🔹 Items Table */}
@@ -46,54 +46,77 @@ const InvoicePrint = ({ invoice }) => {
                     {invoice.items.map((item, index) => (
                         <tr key={index} className="border">
                             <td className="py-3 px-4 border">{item.name}</td>
-                            <td className="py-3 px-4 border">{item.quantity}</td>
+                            <td className="py-3 px-4 border">
+                                {item.quantity} {item.unit === "meter" ? "متر" : "قطعة"}
+                            </td>
                             <td className="py-3 px-4 border">{item.price} شيكل</td>
                             <td className="py-3 px-4 border">{item.price * item.quantity} شيكل</td>
                         </tr>
                     ))}
                 </tbody>
             </table>
-
+    
             {/* 🔹 Payment Details */}
+         
             <div className="mb-8 p-4 bg-gray-50 rounded-lg">
                 <h3 className="font-bold mb-4">تفاصيل الدفع</h3>
                 <p>
                     طريقة الدفع:{" "}
-                    {invoice.payment?.method === "cash"
+                    {invoice?.method?.toLowerCase() === "cash"
                         ? "نقدي"
-                        : invoice.payment?.method === "partial"
-                            ? "دفعات"
-                            : "تقسيط"}
+                        : invoice?.method.toLowerCase() === "installments"
+                            ? "تقسيط"
+                            : "غير معروف"}
                 </p>
 
-                {/* Installment Payments */}
-                {invoice.payment?.method === "installments" && invoice.payment?.installments?.length > 0 && (
+
+                 
+                {
+                    invoice.method !== 'cash' && invoice.payment?.initialPayment > 0 && (
+                    <div className="mt-2">
+                        <p className="font-medium text-blue-600">✅ الدفعة الأولية: {invoice.payment.initialPayment} شيكل</p>
+                    </div>
+                )}
+           
+                {/* ✅ عرض باقي الدفعات */}
+                {(invoice.payment?.paymentDetails?.payments?.length > 0 || invoice.payment?.payments?.length > 0) && (
                     <div className="mt-4">
-                        <p className="font-medium mb-2">جدول الأقساط:</p>
-                        {invoice.payment.installments.map((installment, index) => (
-                            <div key={index} className="flex justify-between text-sm">
-                                <span>القسط {index + 1}</span>
-                                <span>{installment.amount} شيكل</span>
-                                <span>{formatDate(installment.dueDate)}</span>
-                            </div>
-                        ))}
+                        <p className="font-medium mb-2">جدول الدفعات:</p>
+                        <table className="w-full border border-gray-300">
+                            <thead className="bg-gray-100">
+                                <tr className="border">
+                                    <th className="py-2 px-4 border">رقم الدفعة</th>
+                                    <th className="py-2 px-4 border">المبلغ</th>
+                                    <th className="py-2 px-4 border">تاريخ الاستحقاق</th>
+                                    <th className="py-2 px-4 border">الحالة</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {(invoice.payment?.paymentDetails?.payments || invoice.payment?.payments)?.map((payment, index) => (
+                                    <tr key={index} className="border">
+                                        <td className="py-2 px-4 border text-center">{index + 1}</td>
+                                        <td className="py-2 px-4 border text-center">{payment.amount} شيكل</td>
+                                        <td className="py-2 px-4 border text-center">
+                                            {payment.paymentDate ? new Date(payment.paymentDate).toLocaleDateString("ar") : "غير محدد"}
+                                        </td>
+
+                                        <td className="py-2 px-4 border text-center">
+                                            <span className={`px-2 py-1 rounded-lg ${payment.status === "paid" ? "bg-green-500 text-white" : "bg-yellow-500 text-black"}`}>
+                                                {payment.status.toLowerCase() === "paid" ? "مدفوع" : "قيد الانتظار"}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 )}
 
-                {/* Partial Payments */}
-                {invoice.payment?.method === "partial" && invoice.payment?.payments?.length > 0 && (
-                    <div className="mt-4">
-                        <p className="font-medium mb-2">الدفعات المستلمة:</p>
-                        {invoice.payment.payments.map((payment, index) => (
-                            <div key={index} className="flex justify-between text-sm">
-                                <span>دفعة {index + 1}</span>
-                                <span>{payment.amount} شيكل</span>
-                                <span>{formatDate(payment.date)}</span>
-                            </div>
-                        ))}
-                    </div>
-                )}
             </div>
+
+
+
+
 
             {/* 🔹 Invoice Totals */}
             <div className="space-y-2 text-left border-t pt-4">
@@ -106,15 +129,7 @@ const InvoicePrint = ({ invoice }) => {
                     <span>{invoice.total} شيكل</span>
                 </div>
 
-                {invoice.payment?.method !== "cash" && (
-                    <>
-                     
-                        <div className="flex justify-between text-red-600">
-                            <span>المتبقي</span>
-                            <span>{invoice.payment.remaining} شيكل</span>
-                        </div>
-                    </>
-                )}
+    
             </div>
 
             {/* 🔹 Footer Message */}

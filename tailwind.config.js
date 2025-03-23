@@ -8,8 +8,10 @@ export default {
     "./src/Dashboard/components/Inventory.jsx",
     "./src/Dashboard/components/Invoices.jsx",
     "./src/Dashboard/components/Sales.jsx",
-    "./src/Dashboard/components/Category.jsx"
+    "./src/Dashboard/components/Category.jsx",
+    "./src/Dashboard/Loading/Loading.jsx"
   ],
+  darkMode: "class",
   extend: {},
   plugins: [],
 };
